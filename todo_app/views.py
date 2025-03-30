@@ -1,12 +1,14 @@
 from django.contrib.auth.views import LoginView
-from rest_framework import generics, status
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
+from .serializers import NoteSerializer
+from rest_framework.permissions import IsAuthenticated
+from .models import Todo
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -25,5 +27,13 @@ class LogoutView(generics.GenericAPIView):
     # def post(self, request):
     #  request.user.auth_token.delete()
     #     return Response(status=status.HTTP_200_OK)
+
+class TodoCreateView(generics.CreateAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # Create your views here.
