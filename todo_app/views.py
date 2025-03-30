@@ -5,10 +5,11 @@ from .serializers import UserSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from .models import Todo
 from rest_framework import generics
 from .serializers import NoteSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -35,5 +36,13 @@ class TodoCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class TodoUpdateView(generics.UpdateAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
 
 # Create your views here.

@@ -29,11 +29,13 @@ class LogoutView(generics.GenericAPIView):
     #     return Response(status=status.HTTP_200_OK)
 
 class TodoCreateView(generics.CreateAPIView):
-    queryset = todo_app.objects.all()
+    queryset = Todo.objects.all()
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
 
 # Create your views here.
