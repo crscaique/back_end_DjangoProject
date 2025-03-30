@@ -45,4 +45,14 @@ class TodoUpdateView(generics.UpdateAPIView):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
+
+class TodoDeleteView(generics.DestroyAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+
 # Create your views here.
