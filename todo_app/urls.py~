@@ -8,8 +8,8 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('create/', TodoCreateView.as_view(), name='note-create'),
-    path('update/<int:pk>/', TodoCreateView.as_view(), name='note-update'),
-
+    path('update/<int:pk>/', TodoUpdateView.as_view(), name='note-update'),
+path('delete/<int:pk>/', NoteDeleteView.as_view(), name='note-delete'),
     ]
 
 
