@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Todo
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,4 +16,5 @@ def create (self, validated_data):
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
-        '__all__'
+        model = Todo  # Make sure this references the correct model
+        fields = '__all__'

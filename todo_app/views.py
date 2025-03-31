@@ -9,6 +9,7 @@ from .models import Todo
 from rest_framework import generics
 from .serializers import NoteSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 
 class RegisterView(generics.CreateAPIView):
@@ -17,17 +18,18 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 class LoginView(ObtainAuthToken):
-       def post(self, request, *args, **kwargs):
-           response = super(LoginView, self).post(request, *args, **kwargs)
-           token = Token.objects.get(key=response.data['token'])
-           return Response({'token': token.key, 'user_id': token.user_id})
+    def post(self, request, *args, **kwargs):
+        response = super(LoginView, self).post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'user_id': token.user.id})  # Corrected user_id reference
 
 class LogoutView(generics.GenericAPIView):
-   permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
 
-    # def post(self, request):
-    #  request.user.auth_token.delete()
-    #     return Response(status=status.HTTP_200_OK)
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)
+
 
 class TodoCreateView(generics.CreateAPIView):
     queryset = Todo.objects.all()
@@ -53,6 +55,7 @@ class TodoDeleteView(generics.DestroyAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
 
 
 # Create your views here.

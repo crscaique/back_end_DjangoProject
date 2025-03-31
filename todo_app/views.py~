@@ -22,12 +22,15 @@ class LoginView(ObtainAuthToken):
            token = Token.objects.get(key=response.data['token'])
            return Response({'token': token.key, 'user_id': token.user_id})
 
-class LogoutView(generics.GenericAPIView):
-   permission_classes = (IsAuthenticated,)
+from rest_framework import status
 
-    # def post(self, request):
-    #  request.user.auth_token.delete()
-    #     return Response(status=status.HTTP_200_OK)
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)
+
 
 class TodoCreateView(generics.CreateAPIView):
     queryset = Todo.objects.all()
@@ -44,5 +47,16 @@ class TodoUpdateView(generics.UpdateAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+
+class TodoDeleteView(generics.DestroyAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+
 
 # Create your views here.
