@@ -56,6 +56,4 @@ class TodoDeleteView(generics.DestroyAPIView):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
-
-
 # Create your views here.
