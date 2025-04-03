@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Todo
+from rest_framework import serializers, generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -8,11 +13,38 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email','password']
 
-def create (self, validated_data):
-    user = User.objects.create_user(**validated_data)
-    user.set_password(validated_data['password'])
-    user.save()
-    return user
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}  # Hide password in responses
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+
+
+# Define a serializer (even if it's empty)
+class LogoutSerializer(serializers.Serializer):
+    pass
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LogoutSerializer  # Add this line
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Successfully logged out"}, status=200)
+        except Exception as e:
+            return Response({"error": "Invalid token"}, status=400)
+
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
